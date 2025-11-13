@@ -95,6 +95,27 @@ with register_all_facts as HTML_fact_types:
     # TextField._fact_proxy.__repr__ = text_field_str
 
 register_fact_set(name='html')(HTML_fact_types)
+
+# Tango fact types
+with register_all_facts as TANGO_fact_types:
+    Cell = define_fact("Cell", {
+        "id" : str,
+        "value" : {"type" : str, "visible" : True, "semantic" : True},
+        "row" : {"type" : int, "visible" : True},
+        "col" : {"type" : int, "visible" : True},
+        "above" : "Cell",
+        "below" : "Cell",
+        "left": "Cell",
+        "right" : "Cell",
+    })
+
+    def cell_repr(x):
+        return f"Cell(id={x.id!r}, value={x.value!r}, row={x.row!r}, col={x.col!r})"
+
+    Cell._fact_proxy.__str__ = str_as_id
+    Cell._fact_proxy.__repr__ = cell_repr
+
+register_fact_set(name='tango')(TANGO_fact_types)
 # with register_all_actions as HTML_action_types:
 
 
@@ -119,6 +140,20 @@ def html_constraints(_vars):
         if(arg.base_type._fact_name == "TextField"):
             conds &= (arg.value != '')        
 
+    return conds
+
+@register_constraints(name='tango')
+def tango_constraints(_vars):
+    sel, args = _vars[0], _vars[1:]
+    conds = default_constraints(_vars)
+    
+    if(sel.base_type._fact_name == "Cell"):
+        # Cell must be empty (value == "none") to place a symbol
+        conds &= (sel.value == "none")
+    
+    # Note: Input arguments (like "sun" or "moon") are string literals,
+    # not fact objects, so they don't need constraint checking here
+    
     return conds
 
 
@@ -221,3 +256,15 @@ HTML_action_type_set = {x.name: x for x in HTML_action_type_set}
 #     "ButtonPressed" : PressButton,
 # }
 register_action_type_set(name='html')(HTML_action_type_set)
+
+# Tango action types
+with register_all_action_types as TANGO_action_type_set:
+    @define_action_type("PlaceSymbol", 
+        {'type' : str, "semantic" : True}
+        )
+    def PlaceSymbol(wm, selection, inp):
+        # Place a symbol (sun or moon) in a cell
+        wm.modify(selection, 'value', inp)
+
+TANGO_action_type_set = {x.name: x for x in TANGO_action_type_set}
+register_action_type_set(name='tango')(TANGO_action_type_set)

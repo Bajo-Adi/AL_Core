@@ -1,6 +1,6 @@
 from numba.types import f8, string, boolean
 from apprentice.agents.cre_agents.extending import registries, new_register_decorator, new_register_all
-from apprentice.agents.cre_agents.environment import TextField
+from apprentice.agents.cre_agents.environment import TextField, Cell
 from cre import CREFunc
 import numpy as np
 
@@ -157,6 +157,66 @@ def AcrossMultiply(a, b):
         raise ValueError()
 
     return (float(a.value) * float(b.value))
+
+
+### Special Functions for Tango Puzzle
+###  --functions for symbol manipulation and placement
+
+@CREFunc(signature=string(string),
+    shorthand='Toggle({0})')
+def ToggleSymbol(symbol):
+    """Toggle between sun and moon symbols"""
+    if symbol == "sun":
+        return "moon"
+    elif symbol == "moon":
+        return "sun"
+    else:
+        # If not a valid symbol, return sun as default
+        return "sun"
+
+@CREFunc(signature=string(Cell),
+    shorthand='Opposite({0})')
+def GetOppositeSymbol(cell):
+    """Get the opposite symbol of a cell's value"""
+    if cell.value == "sun":
+        return "moon"
+    elif cell.value == "moon":
+        return "sun"
+    else:
+        # If cell is empty, return sun as default
+        return "sun"
+
+@CREFunc(signature=string(string),
+    shorthand='OppositeOf({0})')
+def OppositeOf(symbol):
+    """Get the opposite of a symbol string"""
+    if symbol == "sun":
+        return "moon"
+    elif symbol == "moon":
+        return "sun"
+    else:
+        return "sun"
+
+@CREFunc(signature=string(),
+    shorthand='Sun()')
+def Sun():
+    """Return the sun symbol"""
+    return "sun"
+
+@CREFunc(signature=string(),
+    shorthand='Moon()')
+def Moon():
+    """Return the moon symbol"""
+    return "moon"
+
+@CREFunc(signature=string(Cell),
+    shorthand='CopySymbol({0})')
+def CopySymbol(cell):
+    """Copy the symbol from a cell (returns cell.value)"""
+    if cell.value in ["sun", "moon"]:
+        return cell.value
+    else:
+        return "none"
 
 
 ##### Define all CREFuncs above this line #####

@@ -218,6 +218,12 @@ def CopySymbol(cell):
     else:
         return "none"
 
+@CREFunc(signature=string(),
+    shorthand='Undo()')
+def Undo():
+    """Undo the last action when stuck"""
+    return "undo"
+
 
 ##### Define all CREFuncs above this line #####
 

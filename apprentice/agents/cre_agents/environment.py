@@ -265,6 +265,14 @@ with register_all_action_types as TANGO_action_type_set:
     def PlaceSymbol(wm, selection, inp):
         # Place a symbol (sun or moon) in a cell
         wm.modify(selection, 'value', inp)
+    
+    @define_action_type("Undo", 
+        {'type' : str, "semantic" : False}
+        )
+    def Undo(wm, selection, inp):
+        # Undo action - no state modification needed here
+        # The actual undo is handled by the environment's apply() method
+        pass
 
 TANGO_action_type_set = {x.name: x for x in TANGO_action_type_set}
 register_action_type_set(name='tango')(TANGO_action_type_set)

@@ -148,8 +148,8 @@ def tango_constraints(_vars):
     conds = default_constraints(_vars)
     
     if(sel.base_type._fact_name == "Cell"):
-        # Cell must be empty (value == "none") to place a symbol
-        conds &= (sel.value == "none")
+        # Cell must be empty (value == "none") to place a symbol, OR be undo_button
+        conds &= ((sel.value == "none") | (sel.value == "undo"))
     
     # Note: Input arguments (like "sun" or "moon") are string literals,
     # not fact objects, so they don't need constraint checking here
